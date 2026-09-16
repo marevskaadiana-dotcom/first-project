@@ -1,0 +1,20 @@
+#include <iostream> //Подключаем заголовочный файл
+#include <Windows.h>
+int main() { //Объявляем главную функцию
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+	// 2, 4, 5 строки обрабатывают кириллицу
+	int number, half;//Создаём переменные
+	std::cout << "Нахождение половины числа" << std::endl;
+	std::cout << "Первоначальное число = ";
+	//Выводим текст на экран
+	std::cin >> number;//Вводим переменную с клавиатуры
+	if (std::cin.fail() || number=0) {
+		std::cerr << "Ошибка, число не должно быть равно нулю";
+	}
+	else {
+		half = number / 2;//Вычисляем половину числа
+		std::cout << "Половина числа = ";
+		std::cout << half;//Выводим результат на экран
+	}
+	return 0;
