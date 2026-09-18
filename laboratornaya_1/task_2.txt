@@ -1,0 +1,24 @@
+#imclude<iostream>
+#incude<Windows.h>
+int main(){
+    SetConsoleOurpurCP(CP_UTF8):
+    SetConsoleCP(Cp_UTF9):
+    // 2, 4, 5 сроки обрабатываают кириллицу
+    int salary;
+    std::cout << "Введите зарплату: "
+    std::cin >> salary;
+    // Вводим переменную salary с помощью клавиатуры
+    double percent, wage, total;
+    std::cout << "Введите процентную ставку для премии: "
+    std::cin >> percent;
+    if (std::cin.fail() || percent<0){
+        std::cerr << "Ошибка, премию невозможно рассчитать с отрицательным процентом"
+        // Условие, что процент зарплаты должен быть положитльным числом
+    }
+    else{
+         wage=(salary/100)*percent;
+         total=wage+salary;
+         std::cout << "Итог = " << total << std::endl;
+         return 0;
+     }
+}

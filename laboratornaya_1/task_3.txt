@@ -1,0 +1,25 @@
+#include <iostream> //Подключаем заголовочный файл
+#include <Windows.h> 
+int main() { //Объявляем главную функцию
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    // 2, 4, 5 строки обрабатывают кириллицу
+    int lines, colons; //Создаём переменные
+    std::cout << "Введите количество строк прямоугольника: ";
+    std::cin >> lines;
+    std::cout << "Введите количество столбцов прямоугольника: ";
+    std::cin >> colons;
+    if (std::cin.fail() || lines<=0 || colons<=0) {
+		std::cerr << "Ошибка, невозможно вывести такой прямоугольник";
+    }
+    else {
+    std::cout << "Ваш псевдопрямоугольник:" << std::endl;
+    for (int i = 0; i < lines; i++) { // Внешний цикл — по строкам
+        for (int j = 0; j < colons; j++) { // Внутренний цикл — по столбцам
+            std::cout << "*";
+        }
+        std::cout << std::endl; //Выводим результат на экран
+    }
+    }
+    return 0;
+}
