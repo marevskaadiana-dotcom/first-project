@@ -1,0 +1,37 @@
+#define NOMINMAX
+#include <iostream>
+#include <Windows.h>
+#include <iomanip>
+#include <limits>
+int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    double number;
+    while (true) {
+        std::cout << "Введите вещественное число: ";
+        //Ввод вещественного числа с защитой от ошибок
+        if (std::cin >> number) break;
+        std::cout << "ОШИБКА! Введите число заново.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    //Явные приведения типов
+    int    asInt    = static_cast<int>(number);      // отбрасывает дробную часть
+    float  asFloat  = static_cast<float>(number);    // теряет младшие разряды
+    double asDouble = number;                        // без потерь (исходный тип)
+    std::cout << "\n ===== Анализ точности =====\n\n";
+    std::cout << std::setprecision(15);
+    std::cout << "Исходное число (double): " << asDouble << "\n";
+    std::cout << "Приведение к float:      " << asFloat  << "\n";
+    std::cout << "Приведение к int:        " << asInt    << "\n\n";
+    std::cout << " ===== Потеря данных =====\n\n";
+    // Потеря при float: разница между double и float
+    double floatLoss = asDouble - static_cast<double>(asFloat);
+    std::cout << "Потеря при приведении к float:  "
+              << std::setprecision(15) << floatLoss << "\n";
+    // Потеря при int: разница между double и int 
+    double intLoss = asDouble - static_cast<double>(asInt);
+    std::cout << "Потеря при приведении к int:    "
+              << std::setprecision(15) << intLoss << "\n\n";
+    return 0;
+}

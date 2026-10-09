@@ -1,0 +1,35 @@
+#define NOMINMAX
+#include <iostream>
+#include <Windows.h>
+#include <iomanip>
+#include<limits>
+int main() {
+ SetConsoleOutputCP(CP_UTF8);
+ SetConsoleCP(CP_UTF8);
+ int a, b;
+ while (true) {
+  std::cout << "Введите число: ";
+  if (std::cin >> a) {
+   break;
+  }
+  // ввод числа с повтором ввода данных при ошибке
+  std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+  std::cin.clear(); // сброс флага ошибки
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // очистка буфера от мусора
+ }
+ while (true) {
+  std::cout << "Введите число: ";
+  if (std::cin >> b) {
+   break;
+  }
+  // ввод числа с повтором ввода данных при ошибке
+  std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+  std::cin.clear(); // сброс флага ошибки
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // очистка буфера от мусора
+ }
+ double S = (a * b) / 2.0;
+ std::cout << "\n ===== Ответ ===== " << std::fixed << std::setprecision(3) << S << std::endl;
+ return 0;
+}

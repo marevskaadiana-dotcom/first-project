@@ -1,0 +1,66 @@
+#define NOMINMAX
+#include <iostream>
+#include <Windows.h>
+#include <iomanip>
+#include <limits>
+
+int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    int a, b, c, d;
+    while (true) {
+        std::cout << "Введите число a: ";
+        if (std::cin >> a) {
+            break;
+        }
+    // ввод числа с повтором ввода данных при ошибке
+    std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+    std::cin.clear(); // сброс флага ошибки
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // очистка буфера от мусора
+    }
+    while (true) {
+        std::cout << "Введите число b: ";
+        if (std::cin >> b) {
+            break;
+        }
+    // ввод числа с повтором ввода данных при ошибке
+    std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+    std::cin.clear(); // сброс флага ошибки
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // очистка буфера от мусора
+    }
+    while (true) {
+        std::cout << "Введите число c: ";
+        if (std::cin >> c) {
+            break;
+        }
+    // ввод числа с повтором ввода данных при ошибке
+    std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+    std::cin.clear(); // сброс флага ошибки
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // очистка буфера от мусора
+    }
+    while (true) {
+        std::cout << "Введите число d: ";
+        if (std::cin >> d) {
+            break;
+        }
+    // ввод числа с повтором ввода данных при ошибке
+    std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+    std::cin.clear(); // сброс флага ошибки
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // очистка буфера от мусора
+    }
+    // --- Проверка деления на ноль ---
+    if (c - d == 0) {
+        std::cerr << "\nОШИБКА: деление на ноль невозможно!\n";
+        std::cerr << "Знаменатель (c - d) = " << c << " - " << d << " = 0\n";
+        return 1;   // завершение с кодом ошибки
+    }
+    double y = static_cast<double>(a + b) / static_cast<double>(c - d);
+    std::cout << "\n ===== Ответ =====\n";
+    std::cout << "y = (" << a << " + " << b << ") / (" << c << " - " << d << ")\n";
+    std::cout << "y = " << std::fixed << std::setprecision(3) << y << std::endl;
+    return 0;
+}
