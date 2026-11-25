@@ -1,159 +1,131 @@
 #define NOMINMAX
 #include <iostream>
 #include <Windows.h>
+#include <iomanip>
+#include <cmath>
 #include <limits>
 #include <string>
+// Вспомогательная функция для безопасного ввода вещественных чисел
+double getValidDouble(const std::string& prompt) {
+    double val;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> val) return val;
+        std::cout << "ОШИБКА! Введите число заново.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+// Функция 1: Вычисление e^x через ряд Тейлора
+double my_exp(double x, double eps) {
+    double sum = 1.0;
+    double term = 1.0;
+    int n = 1;
+    while (std::abs(term) > eps && n < 1000) {
+        term *= x / n;
+        sum += term;
+        n++;
+    }
+    return sum;
+}
+// Функция 2: Вычисление sin(x) через ряд Тейлора
+double my_sin(double x, double eps) {
+    double sum = x;
+    double term = x;
+    int n = 1;
+    while (std::abs(term) > eps && n < 1000) {
+        // Следующий член: term * (-x^2) / ((2n) * (2n+1))
+        term *= -1.0 * x * x / ((2 * n) * (2 * n + 1));
+        sum += term;
+        n++;
+    }
+    return sum;
+}
+// Функция 3: Вычисление ln(1+x) через ряд Тейлора
+double my_ln(double x, double eps) {
+    double sum = 0.0;
+    double term = x;
+    int n = 1;
+    while (std::abs(term) > eps && n < 10000) { // Логарифм сходится медленно
+        sum += term / n;
+        term *= -x;
+        n++;
+    }
+    return sum;
+}
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    std::string regLogin = "", regPass = "";
-    std::string login, pass;
-    int mainChoice, subChoice;
+    int choice;
+    std::cout << "ВЫБОР РЯДА ДЛЯ ВЫЧИСЛЕНИЯ\n";
+    std::cout << "1 - e^x (Экспонента)\n";
+    std::cout << "2 - sin(x) (Синус)\n";
+    std::cout << "3 - ln(1+x) (Натуральный логарифм)\n";
     while (true) {
-        std::cout << "ГЛАВНОЕ МЕНЮ (НЕ АВТОРИЗОВАН)\n";
-        std::cout << "1 - Регистрация\n";
-        std::cout << "2 - Вход\n";
-        std::cout << "3 - Выход из программы\n";
-        std::cout << "Выберите действие: ";
-        // Защита ввода 
-        while (!(std::cin >> mainChoice)) {
-            std::cout << "ОШИБКА! Введите число (1-3): ";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Ваш выбор (1-3): ";
+        if (std::cin >> choice && choice >= 1 && choice <= 3) break;
+        std::cout << "ОШИБКА! Введите 1, 2 или 3.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    double eps = getValidDouble("Введите точность (например, 0.0001): ");
+    if (eps <= 0) {
+        std::cout << "ОШИБКА: Точность должна быть положительной!\n";
+        return 1;
+    }
+    double start = getValidDouble("Введите начало интервала (x от): ");
+    double end = getValidDouble("Введите конец интервала (x до): ");
+    double step = getValidDouble("Введите шаг: ");
+    if (start > end) {
+        std::cout << "ОШИБКА: Начало интервала больше конца!\n";
+        return 1;
+    }
+    if (step <= 0) {
+        std::cout << "ОШИБКА: Шаг должен быть больше нуля!\n";
+        return 1;
+    }
+    // Заголовок таблицы
+    std::cout << "\n" << std::string(65, '-') << "\n";
+    std::cout << std::setw(10) << "x" << " | " 
+              << std::setw(12) << "Мой ряд" << " | " 
+              << std::setw(12) << "Библиотека" << " | " 
+              << std::setw(12) << "Разница" << "\n";
+    std::cout << std::string(65, '-') << "\n";
+    std::cout << std::fixed << std::setprecision(6);
+    for (double x = start; x <= end + 1e-9; x += step) {
+        double my_val = 0, std_val = 0;
+        bool valid_point = true;
+        // Вычисление в зависимости от выбора
+        if (choice == 1) {
+            my_val = my_exp(x, eps);
+            std_val = std::exp(x);
+        } 
+        else if (choice == 2) {
+            my_val = my_sin(x, eps);
+            std_val = std::sin(x);
+        } 
+        else if (choice == 3) {
+            // ОБРАБОТКА ОСОБЫХ ТОЧЕК (Область сходимости ряда)
+            if (x <= -1.0 || x > 1.0) {
+                valid_point = false;
+            } else {
+                my_val = my_ln(x, eps);
+                std_val = std::log(1.0 + x);
+            }
         }
-        //ВНЕШНИЙ SWITCH
-        switch (mainChoice) {
-            case 1: {
-                std::cout << "РЕГИСТРАЦИЯ\n";
-                std::cout << "Придумайте логин: ";
-                std::cin >> regLogin;
-                std::cout << "Придумайте пароль: ";
-                std::cin >> regPass;
-                std::cout << "Успешно зарегистрировано!\n";
-                break;
-            }
-            case 2: {
-                if (regLogin.empty()) {
-                    std::cout << "\nОШИБКА: Сначала пройдите регистрацию!\n";
-                    break;
-                }
-                bool isLoggedIn = false;
-                int attempts = 3;
-                std::cout << "ВХОД В СИСТЕМУ\n";
-                while (attempts > 0) {
-                    std::cout << "Логин: ";
-                    std::cin >> login;
-                    std::cout << "Пароль: ";
-                    std::cin >> pass;
-                    if (login == regLogin && pass == regPass) {
-                        isLoggedIn = true;
-                        break;
-                    } else {
-                        attempts--;
-                        std::cout << "Неверный логин или пароль. Осталось попыток: " << attempts << "\n";
-                    }
-                }
-
-                if (isLoggedIn) {
-                    std::cout << "\nУспешный вход! Добро пожаловать.\n";
-                    bool inAccount = true;
-                    while (inAccount) {
-                        std::cout << "ЛИЧНЫЙ КАБИНЕТ\n";
-                        std::cout << "1 - Калькулятор\n";
-                        std::cout << "2 - Конвертер температур\n";
-                        std::cout << "3 - Пройти тест\n";
-                        std::cout << "4 - Выход из аккаунта\n";
-                        std::cout << "Выберите функцию: ";
-                        // Защита ввода
-                        while (!(std::cin >> subChoice)) {
-                            std::cout << "ОШИБКА! Введите число (1-4): ";
-                            std::cin.clear();
-                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        }
-
-                        //ВНУТРЕННИЙ (ВЛОЖЕННЫЙ) SWITCH
-                        switch (subChoice) {
-                            case 1: {
-                                std::cout << "КАЛЬКУЛЯТОР\n";
-                                double a, b;
-                                char op;
-                                std::cout << "Введите выражение (например, 5 + 3): ";
-                                while (!(std::cin >> a >> op >> b)) {
-                                    std::cout << "ОШИБКА! Неверный формат. Введите (число операция число): ";
-                                    std::cin.clear();
-                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                }
-                                if (op == '+') std::cout << "Результат: " << a + b << "\n";
-                                else if (op == '-') std::cout << "Результат: " << a - b << "\n";
-                                else if (op == '*') std::cout << "Результат: " << a * b << "\n";
-                                else if (op == '/') {
-                                    if (b == 0) std::cout << "ОШИБКА: Деление на ноль!\n";
-                                    else std::cout << "Результат: " << a / b << "\n";
-                                }
-                                else std::cout << "ОШИБКА: Неизвестная операция.\n";
-                                break;
-                            }
-                            case 2: {
-                                std::cout << "КОНВЕРТЕР\n";
-                                std::cout << "1. °C -> °F\n";
-                                std::cout << "2. °F -> °C\n";
-                                int convChoice;
-                                std::cout << "Выбор: ";
-                                while (!(std::cin >> convChoice)) {
-                                    std::cout << "ОШИБКА! Введите 1 или 2: ";
-                                    std::cin.clear();
-                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                }
-                                double temp;
-                                std::cout << "Введите температуру: ";
-                                while (!(std::cin >> temp)) {
-                                    std::cout << "ОШИБКА! Введите число: ";
-                                    std::cin.clear();
-                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                }
-                                if (convChoice == 1) std::cout << "Результат: " << (temp * 9.0 / 5.0 + 32.0) << " °F\n";
-                                else if (convChoice == 2) std::cout << "Результат: " << ((temp - 32.0) * 5.0 / 9.0) << " °C\n";
-                                else std::cout << "Неверный выбор конвертации.\n";
-                                break;
-                            }
-                            case 3: {
-                                std::cout << "ТЕСТ\n";
-                                std::cout << "Сколько будет 7 * 8? ";
-                                int answer;
-                                while (!(std::cin >> answer)) {
-                                    std::cout << "ОШИБКА! Введите число: ";
-                                    std::cin.clear();
-                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                                }
-                                if (answer == 56) std::cout << "Правильно! Отличная работа.\n";
-                                else std::cout << "Неправильно. Правильный ответ: 56.\n";
-                                break;
-                            }
-                            case 4: {
-                                std::cout << "Выход из аккаунта\n";
-                                inAccount = false;
-                                break;
-                            }
-                            default: {
-                                std::cout << "Неверный выбор. Введите число от 1 до 4.\n";
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    std::cout << "\nВы исчерпали все 3 попытки. Возврат в главное меню.\n";
-                }
-                break;
-            }
-            case 3: {
-                std::cout << "Завершение работы программы. До свидания!\n";
-                return 0;
-            }
-            default: {
-                std::cout << "Неверный выбор. Введите число от 1 до 3.\n";
-                break;
-            }
+        // Вывод результата
+        if (!valid_point) {
+            std::cout << std::setw(10) << x << " | " 
+                      << "ОШИБКА: x должен быть в (-1; 1]" << "\n";
+        } else {
+            double diff = std::abs(my_val - std_val);
+            std::cout << std::setw(10) << x << " | " 
+                      << std::setw(12) << my_val << " | " 
+                      << std::setw(12) << std_val << " | " 
+                      << std::setw(12) << diff << "\n";
         }
     }
+    std::cout << std::string(65, '-') << "\n";
+
     return 0;
 }

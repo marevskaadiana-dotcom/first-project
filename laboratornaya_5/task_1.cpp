@@ -1,40 +1,66 @@
 #define NOMINMAX
 #include <iostream>
 #include <Windows.h>
+#include <iomanip>
+#include <cmath>
 #include <limits>
+
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    int quadrant;
-    //Ввод номера четверти с защитой от ошибок
+    double first, last, shag;
     while (true) {
-        std::cout << "Введите номер координатной четверти (1-4): ";
-        if (std::cin >> quadrant) {
+        std::cout << "Введите начало интервала: ";
+        if (std::cin >> first) {
             break;
         }
-        std::cout << "ОШИБКА! Введите целое число заново.\n";
-        std::cin.clear();
+        // ввод числа с повтором ввода данных при ошибке
+        std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+        std::cin.clear(); // сброс флага ошибки
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // очистка буфера от мусора
     }
-
-    //Простой switch без группировки
-    switch (quadrant) {
-        case 1:
-            std::cout << "Знаки координат: (+, +)\n";
+    while (true) {
+        std::cout << "Введите конец интервала: ";
+        if (std::cin >> last) {
             break;
-        case 2:
-            std::cout << "Знаки координат: (+, -)\n";
-            break;
-        case 3:
-            std::cout << "Знаки координат: (-, -)\n";
-            break;
-        case 4:
-            std::cout << "Знаки координат: (-, +)\n";
-            break;
-        default:
-            std::cout << "ОШИБКА: Четвертей всего 4. Введите число от 1 до 4.\n";
-            break;
+        }
+        // ввод числа с повтором ввода данных при ошибке
+        std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+        std::cin.clear(); // сброс флага ошибки
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // очистка буфера от мусора
     }
+    while (true) {
+        std::cout << "Введите шаг интервала: ";
+        if (std::cin >> shag) {
+            break;
+        }
+        // ввод числа с повтором ввода данных при ошибке
+        std::cout << "ОШИБКА! Введите число заново.\n"; // ввод текста на экран
+        std::cin.clear(); // сброс флага ошибки
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // очистка буфера от мусора
+    }
+    if (first > last) {
+        std::cout << "ОШИБКА: начало интервала не может быть больше конца!" << std::endl;
+        return 1;
+    } // Условие для правильного построения функции
+    if (shag <= 0) {
+        std::cout << "ОШИБКА: шаг не может быть отрицательным!" << std::endl;
+        return 1;
+    }
+    // Условие для правильного построения функции
 
-    return 0;
+    std::cout << "\n$====================================$" << std::endl;
+    std::cout << " x | y = x**2 + 5 " << std::endl;
+    std::cout << "$====================================$" << std::endl;
+    std::cout << std::fixed << std::setprecision(4);
+    for (double x = first; x <= last + 1e-9; x += shag) { // Использование + 1e-9 для учёта погрешности double
+    double y = x*x + 5; // Вычисляем значение функции
+    std::cout << std::setw(8) << x << "|" << std::setw(12) << y << std::endl; //Вывод элементов на расстоянии setw
+    }
+    std::cout << "$=====================================$" << std::endl;
+
+return 0;
 }
